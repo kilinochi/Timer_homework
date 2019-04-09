@@ -1,6 +1,6 @@
 package ru.ok.timer.app;
 
-import android.annotation.TargetApi;
+
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
