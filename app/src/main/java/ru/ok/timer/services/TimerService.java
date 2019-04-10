@@ -30,6 +30,11 @@ public class TimerService extends Service {
     }
 
     @Override
+    public boolean stopService(Intent name) {
+        return super.stopService(name);
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String timerValue = intent.getStringExtra(TIMER_VALUE_TAG);
 

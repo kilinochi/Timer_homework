@@ -24,8 +24,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TIMER_VALUE_TAG = "TIMER_VALUE";
     private CountDownTimer countDownTimer;
     private boolean timerRunning;
-    Button startStopButton;
-    Button resetButton;
+    private Button startStopButton;
+    private Button resetButton;
+    private Intent timerIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,21 +35,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         timerView = findViewById(R.id.timer);
         resetButton = findViewById(R.id.btn_reset);
         startStopButton = findViewById(R.id.btn_start_stop);
-
+        timerIntent = new Intent(this, TimerService.class);
         startStopButton.setOnClickListener(this);
         resetButton.setOnClickListener(this);
     }
 
     public void startTimerService() {
         String timerValue = timerView.getText().toString();
-        Intent serviceIntent = new Intent(this, TimerService.class);
-        serviceIntent.putExtra(TIMER_VALUE_TAG, timerValue);
-        ContextCompat.startForegroundService(this, serviceIntent);
+        timerIntent.putExtra(TIMER_VALUE_TAG, timerValue);
+        ContextCompat.startForegroundService(this, timerIntent);
     }
 
     public void stopTimerService() {
-        Intent serviceIntent = new Intent(this, TimerService.class);
-        stopService(serviceIntent);
+        stopService(timerIntent);
     }
 
 
@@ -98,11 +97,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         timerView.setText(timeLeftFormatted);
-        startTimerService();
     }
 
     private void resetTimer() {
-        mTimeLeftInMillis = START_TIME_IN_MILLIS;
+        mTimeLeftInMillis = START_TIME_IN_MILLIS;;
         updateTimer();
     }
 }
