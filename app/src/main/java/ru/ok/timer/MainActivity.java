@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editor.putLong(END_TIMER_TAG, endTimer);
         editor.putBoolean(TIMER_RUNNING_TAG, timerRunning);
         editor.apply();
+        stopTimerService();
     }
 
     @Override
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onTick(long millisUntilFinished) {
                 mTimeLeftInMillis = millisUntilFinished;
                 updateTimer();
+                startTimerService();
             }
 
             @Override
@@ -140,29 +142,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         timerView.setText(timeLeftFormatted);
-        if(timerRunning) {
-            startTimerService();
-        }
-        else {
-            stopTimerService();
-        }
     }
 
     private void resetTimer() {
         timerRunning = false;
         mTimeLeftInMillis = START_TIME_IN_MILLIS;
+        stopTimerService();
         updateTimer();
     }
 
     private void updateButtons() {
         if(timerRunning) {
-            startStopButton.setText(R.string.timer_pause);
             resetButton.setVisibility(View.GONE);
+            startStopButton.setText(R.string.timer_pause);
         }
         else {
             startStopButton.setText(R.string.button_start);
             if(mTimeLeftInMillis < 1000) {
-                startStopButton.setVisibility(View.GONE);
+                resetButton.setVisibility(View.GONE);
             }
             else {
                 startStopButton.setVisibility(View.VISIBLE);
