@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -29,9 +30,7 @@ public class TimerService extends Service {
     private NotificationManager notificationManager;
     private CountDownTimer timer;
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
-    private long endTimer;
     private static final long START_TIME_IN_MILLIS = 600000;
-    private boolean timerRunning;
     private EventContext eventContext;
 
 
@@ -56,17 +55,21 @@ public class TimerService extends Service {
         startForeground(TIMER_NOTIFICATION_ID, notification);
     }
 
+
     @Override
-    public boolean stopService(Intent name) {
-        return super.stopService(name);
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+    }
+
+    @Override
+    public void unbindService(ServiceConnection conn) {
+        super.unbindService(conn);
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(timer != null) {
-            timer.onFinish();
-        }
     }
 
     @Nullable
@@ -75,32 +78,40 @@ public class TimerService extends Service {
         return timerServiceBinder;
     }
 
-    public boolean isTimerRunning() {
-        return timerRunning;
-    }
-
 
     private void startTimer() {
         timer = new CustomTimer(mTimeLeftInMillis, 1000);
         Log.d("START_TIMER", String.valueOf(this));
         timer.start();
-        timerRunning = true;
     }
 
     private void stopTimer() {
+        Log.d("STOP_TIMER", String.valueOf(this));
         timer.cancel();
-        timerRunning = false;
+        stopSelf();
     }
 
     private void resetTimer() {
-        mTimeLeftInMillis = START_TIME_IN_MILLIS;
+        if(timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        notificationManager.cancel(TIMER_NOTIFICATION_ID);
+        onDestroy();
     }
 
 
     public final class TimerServiceBinder extends Binder {
-
-        public void setEventContext(EventContext evContext) {
+        public void bind(EventContext evContext) {
             eventContext = evContext;
+        }
+
+        public void stopTimer() {
+            TimerService.this.stopTimer();
+        }
+
+        public void resetTimer() {
+            TimerService.this.resetTimer();
         }
     }
 
@@ -113,7 +124,6 @@ public class TimerService extends Service {
         @Override
         public void onTick(long millisUntilFinished) {
             Log.d("RUNTIMER", String.valueOf(this));
-            endTimer = System.currentTimeMillis() + mTimeLeftInMillis;
             mTimeLeftInMillis = millisUntilFinished;
             int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
             int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
@@ -126,7 +136,7 @@ public class TimerService extends Service {
 
         @Override
         public void onFinish() {
-            timerRunning = false;
+
         }
     }
 }

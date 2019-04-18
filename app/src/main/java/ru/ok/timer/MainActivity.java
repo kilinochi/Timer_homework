@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,21 +19,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private TextView timerView;
-    private Button startStopButton;
-    private Button resetButton;
     private boolean isBound = false;
-    private TimerService timerService;
     private TimerService.TimerServiceBinder binder;
     private boolean isTimerRunning = false;
     private Intent timerIntent;
+    private Button startStopButton;
+    private Button resetButton;
 
     @Override
     protected void onStop() {
         super.onStop();
-        if(isBound) {
-            unbindService(timerConnection);
-            isBound = false;
+        if(!isBound) {
+            return;
         }
+        unbindService(timerConnection);
+        isBound = false;
     }
 
     @Override
@@ -62,16 +61,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_start_stop:
                 if(isBound){
                     if(isTimerRunning) {
-
+                        isTimerRunning = false;
+                        startStopButton.setText(getString(R.string.start));
+                        resetButton.setVisibility(View.VISIBLE);
+                        binder.stopTimer();
                     }
                     else {
+                        isTimerRunning = true;
+                        startStopButton.setText(getString(R.string.stop));
+                        resetButton.setVisibility(View.GONE);
                         ContextCompat.startForegroundService(this, timerIntent);
                     }
                 }
                 break;
             case R.id.btn_reset:
                 if(isBound && binder != null) {
-
+                    binder.resetTimer();
+                    setTimerValue("00:00:0000");
+                    isTimerRunning = false;
                 }
                 break;
         }
@@ -84,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             binder = (TimerService.TimerServiceBinder) service;
-            binder.setEventContext(eventContext);
+            binder.bind(eventContext);
             isBound = true;
         }
 
@@ -93,8 +100,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             isBound = false;
         }
     };
-
-
 
     @Override
     public void setTimerValue(String value) {
