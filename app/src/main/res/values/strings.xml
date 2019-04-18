@@ -5,5 +5,5 @@
     <string name="start">start</string>
     <string name="stop">stop</string>
     <string name="timer_pause">Pause</string>
-    <string name="timer_view_value">00:00:0000</string>
+    <string name="timer_view_value">00:00</string>
 </resources>

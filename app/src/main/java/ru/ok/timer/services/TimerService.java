@@ -128,8 +128,7 @@ public class TimerService extends Service {
             mTimeLeftInMillis = millisUntilFinished;
             int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
             int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
-            int millis = (int) (mTimeLeftInMillis % 1000);
-            String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d:%04d", minutes, seconds, millis);
+            String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
             notificationBuilder.setContentText(timeLeftFormatted);
             eventContext.setTimerValue(timeLeftFormatted);
             notificationManager.notify(TIMER_NOTIFICATION_ID, notificationBuilder.build());
@@ -137,7 +136,7 @@ public class TimerService extends Service {
 
         @Override
         public void onFinish() {
-
+            mTimeLeftInMillis = START_TIME_IN_MILLIS;
         }
     }
 }

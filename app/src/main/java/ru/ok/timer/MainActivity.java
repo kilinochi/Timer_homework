@@ -2,7 +2,6 @@ package ru.ok.timer;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import ru.ok.timer.app.App;
 import ru.ok.timer.callbacks.EventContext;
 import ru.ok.timer.services.TimerService;
 
