@@ -96,6 +96,7 @@ public class TimerService extends Service {
             timer.cancel();
             timer = null;
         }
+        mTimeLeftInMillis = START_TIME_IN_MILLIS;
         notificationManager.cancel(TIMER_NOTIFICATION_ID);
         onDestroy();
     }
