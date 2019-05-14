@@ -1,5 +1,6 @@
 package ru.ok.timer.services;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,6 +8,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Binder;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.util.Log;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import ru.ok.timer.MainActivity;
 import ru.ok.timer.R;
@@ -49,7 +52,7 @@ public class TimerService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationBuilder = new NotificationCompat.Builder(this, TIMER_TAG);
         Notification notification = notificationBuilder.setContentTitle("Timer")
-                .setContentText("00:00:0000")
+                .setContentText("00:00")
                 .setSmallIcon(R.drawable.ic_notification_timer)
                 .setContentIntent(pendingIntent).build();
         startForeground(TIMER_NOTIFICATION_ID, notification);
@@ -137,6 +140,7 @@ public class TimerService extends Service {
         @Override
         public void onFinish() {
             mTimeLeftInMillis = START_TIME_IN_MILLIS;
+            eventContext.setTimerValue(String.valueOf(START_TIME_IN_MILLIS));
         }
     }
 }

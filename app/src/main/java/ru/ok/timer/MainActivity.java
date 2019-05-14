@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_reset:
                 if(isBound && binder != null) {
                     binder.resetTimer();
-                    setTimerValue("10:00:0000");
                     isTimerRunning = false;
                 }
                 break;
